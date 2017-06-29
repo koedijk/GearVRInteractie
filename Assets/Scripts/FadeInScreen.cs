@@ -30,9 +30,10 @@ public class FadeInScreen : MonoBehaviour
 	    }
 	    if (alpha != renderer.material.color.a)
 	    {
-	        Color newColor = renderer.material.color;
-	        newColor.a = alpha;
-	        renderer.material.color = newColor;
+	        _col = renderer.material.color;
+	        _col.a = alpha;
+	        renderer.material.color = _col;
 	    }
+
     }
 }

@@ -12,7 +12,7 @@ public class Score : MonoBehaviour
         set { _score = value; }
     }
 
-    void Start ()
+    void Awake ()
 	{
 	    scoreText = GameObject.FindGameObjectWithTag("Score").GetComponent<Text>();
 	    scoreText.text = _score.ToString();

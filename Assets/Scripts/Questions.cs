@@ -7,36 +7,44 @@ public class Questions : MonoBehaviour
 {
     [SerializeField]
     private Text _textQuestion;
-    public Score score;
+    public Score Score;
     public VideoManage _Video;
     private GazeInteraction _Gaze;
     private AdvisersManager _advise;
 
+    [SerializeField]
     private ShowEndStats _showEnd;
 
     public GameObject AnswerButtons;
+    private Text HintText;
     private int AddScore = 20;
 
     public string[] QuestionStrings;
-    public bool[] AnswersBooleans;
-    public float[] TimeTillQuestion;
+    public bool[]   AnswersBooleans;
+    public string[] Hints;
+    public float[]  TimeTillQuestion;
 
-    private int CurrentQuestion = 0;
+    [SerializeField]
+    private int  CurrentQuestion = 0;
     private bool CurrentRightAnswer;
 
     void Awake()
     {
-        
+        HintText = GameObject.FindGameObjectWithTag("HintText").GetComponent<Text>();
         _advise = GetComponent<AdvisersManager>();
         _Gaze = GameObject.Find("Camera").GetComponent<GazeInteraction>();
-        score = GameObject.Find("Game_Manager").GetComponent<Score>();
+        Score = GameObject.Find("Game_Manager").GetComponent<Score>();
         _showEnd = _Gaze.gameObject.GetComponent<ShowEndStats>();
         StartCoroutine(ShowQuestion());
+        _advise.ShowHint(false);
+        AnswerButtons.SetActive(false);
+        
     }
 
     void GetQuestion()
     {
         _textQuestion.text = QuestionStrings[CurrentQuestion];
+        
         CurrentRightAnswer = AnswersBooleans[CurrentQuestion];
     }
 
@@ -46,13 +54,15 @@ public class Questions : MonoBehaviour
         {
             if (CurrentRightAnswer)
             {
-                score.AnimateCounter(AddScore);
+                Score.AnimateCounter(AddScore);
             }
         }
         AnswerButtons.SetActive(false);
         _Gaze.SetActive(false);
         _Video.PlayOrResume();
         StartCoroutine(ShowQuestion());
+        _advise.usedAdviser = false;
+        _advise.ShowHint(false);
     }
 
     public void NietWaar()
@@ -61,13 +71,15 @@ public class Questions : MonoBehaviour
         {
             if (!CurrentRightAnswer)
             {
-                score.AnimateCounter(AddScore);
+                Score.AnimateCounter(AddScore);
             }
         }
         AnswerButtons.SetActive(false);
         _Gaze.SetActive(false);
         _Video.PlayOrResume();
         StartCoroutine(ShowQuestion());
+        _advise.usedAdviser = false;
+        _advise.ShowHint(false);
     }
 
     IEnumerator ShowQuestion()
@@ -92,9 +104,13 @@ public class Questions : MonoBehaviour
         else if(CurrentQuestion == QuestionStrings.Length)
         {
             _Video.Pause();
-            yield return new WaitForSeconds(2);
+            yield return new WaitForSeconds(5);
             _showEnd.ActiveStats();
-
         }
+    }
+
+    public void SetHInt()
+    {
+        HintText.text = Hints[CurrentQuestion-1];
     }
 }
